@@ -84,4 +84,14 @@ const Preview = ({ type, config, hass }) => {
   );
 };
 
+useEffect(() => {
+  console.log('🔍 Debug Preview:');
+  console.log('- containerRef:', containerRef.current);
+  console.log('- config:', config);
+  console.log('- hass:', hass);
+  console.log('- button-card enregistré ?', customElements.get('button-card'));
+  
+  // ... reste du code
+}, [type, config, hass]);
+
 export default Preview;
