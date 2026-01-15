@@ -2,33 +2,31 @@ import React, { useEffect, useRef, useState } from 'react';
 
 const Preview = ({ type, config, hass }) => {
   const containerRef = useRef(null);
-  const [status, setStatus] = useState('loading'); // loading, error, success
+  const [status, setStatus] = useState('loading');
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current || !config || !hass) return;
 
+    // ✅ CORRECTION : Utiliser 'button-card' au lieu de 'custom-button-card'
     const cardTag = type === 'button-card' ? 'button-card' : 'custom-bubble-card';
     
-    // 1. Vérifier si le Custom Element est enregistré dans le navigateur
     const isRegistered = customElements.get(cardTag);
 
     if (!isRegistered) {
-      // Si pas enregistré, on attend un peu (max 2 secondes)
       customElements.whenDefined(cardTag).then(() => {
         renderCard(cardTag);
       }).catch(() => {
         setStatus('error');
-        setErrorMessage(`Le plugin ${cardTag} n'est pas chargé. Vérifie le fichier index.html.`);
+        setErrorMessage(`Le plugin ${cardTag} n'est pas chargé. Vérifiez le fichier button-card.js dans /public/plugins/`);
       });
 
-      // Timeout de sécurité si le fichier JS est 404
       setTimeout(() => {
         if (!customElements.get(cardTag)) {
           setStatus('error');
-          setErrorMessage(`TIMEOUT: Impossible de charger ${cardTag}. Le fichier .js est probablement introuvable (Erreur 404).`);
+          setErrorMessage(`TIMEOUT: Impossible de charger ${cardTag}. Le fichier button-card.js est probablement introuvable.`);
         }
-      }, 2000);
+      }, 3000);
     } else {
       renderCard(cardTag);
     }
@@ -36,7 +34,7 @@ const Preview = ({ type, config, hass }) => {
     function renderCard(tag) {
       try {
         const element = document.createElement(tag);
-        // Sécurité critique
+        
         if (typeof element.setConfig !== 'function') {
           throw new Error("La méthode setConfig n'existe pas. Le plugin est mal chargé.");
         }
@@ -48,6 +46,7 @@ const Preview = ({ type, config, hass }) => {
         containerRef.current.appendChild(element);
         setStatus('success');
       } catch (e) {
+        console.error('Erreur lors du rendu:', e);
         setStatus('error');
         setErrorMessage(e.message);
       }
@@ -56,21 +55,31 @@ const Preview = ({ type, config, hass }) => {
   }, [type, config, hass]);
 
   return (
-    <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+    <div style={{ width: '100%', display: 'flex', justifyContent: 'center', flexDirection: 'column', gap: '10px' }}>
       
-      {/* Affichage des erreurs si ça plante */}
+      {status === 'loading' && (
+        <div style={{ background: '#1e293b', color: '#94a3b8', padding: '15px', borderRadius: '8px', textAlign: 'center' }}>
+          Chargement du plugin button-card...
+        </div>
+      )}
+
       {status === 'error' && (
-        <div style={{ background: '#7f1d1d', color: '#fca5a5', padding: '15px', borderRadius: '8px', maxWidth: '300px', textAlign: 'center' }}>
-          <strong>Erreur critique :</strong><br/>
+        <div style={{ background: '#7f1d1d', color: '#fca5a5', padding: '15px', borderRadius: '8px', textAlign: 'center' }}>
+          <strong>⚠️ Erreur critique :</strong><br/>
           {errorMessage}<br/>
           <small style={{display:'block', marginTop:'10px', color: '#fff'}}>
-            Vérifie que le fichier <code>/public/plugins/button-card.js</code> existe bien dans ton projet.
+            Vérifiez que le fichier <code>/public/plugins/button-card.js</code> existe bien.
           </small>
         </div>
       )}
 
-      {/* Zone de rendu */}
-      <div ref={containerRef} style={{ display: status === 'success' ? 'block' : 'none' }}></div>
+      <div 
+        ref={containerRef} 
+        style={{ 
+          display: status === 'success' ? 'block' : 'none',
+          width: '100%'
+        }}
+      ></div>
     </div>
   );
 };

@@ -1,17 +1,9 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import Preview from '../components/Preview';
 import yaml from 'js-yaml';
 
 const RugbyTemplate = () => {
-  const [form, setForm] = useState({
-    teamA: 'Toulouse',
-    teamB: 'Bordeaux',
-    competition: 'Top14',
-    channel: 'BeIn Sport 1',
-    date: '2026-01-20',
-    time: '21:00'
-  });
-
+  // Couleurs personnalisables
   const [colors, setColors] = useState({
     cardBgTop: '#333333',
     cardBgBottom: '#1a1a1a',
@@ -21,7 +13,7 @@ const RugbyTemplate = () => {
     channelColor: '#e67e22'
   });
 
-  // ✅ Génération dynamique de la config avec useMemo
+  // Configuration de la carte générée dynamiquement
   const cardConfig = useMemo(() => {
     return {
       type: 'custom:button-card',
@@ -43,7 +35,6 @@ const RugbyTemplate = () => {
         ]
       },
       custom_fields: {
-        // ✅ Injection directe des couleurs dans le template
         match: `[[[
           var msg = entity.attributes.message || "";
           var parts = msg.split(' - ');
@@ -144,12 +135,12 @@ const RugbyTemplate = () => {
         ]]]`
       }
     };
-  }, [colors]); // ✅ Regénère la config quand les couleurs changent
+  }, [colors]);
 
-  // Mock Hass avec useMemo
+  // Mock Hass avec données exemple
   const mockHass = useMemo(() => {
-    const message = `${form.competition} - ${form.teamA} vs ${form.teamB}`;
-    const fullDate = new Date(`${form.date}T${form.time}:00`);
+    const message = "Top14 - Toulouse vs Bordeaux";
+    const fullDate = new Date('2026-01-20T21:00:00');
 
     return {
       states: {
@@ -157,7 +148,7 @@ const RugbyTemplate = () => {
           state: "on",
           attributes: {
             message: message,
-            location: form.channel,
+            location: "BeIn Sport 1",
             start_time: fullDate.toISOString(),
           }
         }
@@ -166,74 +157,94 @@ const RugbyTemplate = () => {
       locale: { language: "fr" },
       themes: { darkMode: true },
     };
-  }, [form]);
+  }, []);
 
-  // ✅ YAML généré automatiquement
+  // YAML généré automatiquement
   const yamlCode = useMemo(() => yaml.dump(cardConfig), [cardConfig]);
 
   const copyCode = () => {
     navigator.clipboard.writeText(yamlCode);
-    alert("Code copié !");
+    alert("Code copié dans le presse-papier !");
   };
 
   return (
     <div className="builder-container">
-      {/* GAUCHE : Paramètres */}
+      
+      {/* GAUCHE : Paramètres de couleurs uniquement */}
       <div className="sidebar">
-        <h2>Configuration</h2>
+        <h2>⚙️ Configuration</h2>
         
-        <h3>Données</h3>
-        <div className="form-group">
-          <label>Compétition</label>
-          <input type="text" value={form.competition} onChange={e => setForm({...form, competition: e.target.value})} />
-        </div>
-        <div className="form-group">
-          <label>Équipe A</label>
-          <input type="text" value={form.teamA} onChange={e => setForm({...form, teamA: e.target.value})} />
-        </div>
-        <div className="form-group">
-          <label>Équipe B</label>
-          <input type="text" value={form.teamB} onChange={e => setForm({...form, teamB: e.target.value})} />
-        </div>
-        <div className="form-group">
-          <label>Chaîne</label>
-          <input type="text" value={form.channel} onChange={e => setForm({...form, channel: e.target.value})} />
-        </div>
-        <div className="form-group">
-          <label>Date & Heure</label>
-          <div style={{display:'flex', gap:'5px'}}>
-            <input type="date" value={form.date} onChange={e => setForm({...form, date: e.target.value})} />
-            <input type="time" value={form.time} onChange={e => setForm({...form, time: e.target.value})} />
-          </div>
-        </div>
-
-        <h3>Design & Couleurs</h3>
+        <h3>🎨 Design & Couleurs</h3>
+        
         <div className="form-group">
           <label>Fond Carte (Haut)</label>
           <div className="color-picker-row">
-            <input type="color" value={colors.cardBgTop} onChange={e => setColors({...colors, cardBgTop: e.target.value})} />
+            <input 
+              type="color" 
+              value={colors.cardBgTop} 
+              onChange={e => setColors({...colors, cardBgTop: e.target.value})} 
+            />
             <span>{colors.cardBgTop}</span>
           </div>
         </div>
+
         <div className="form-group">
           <label>Fond Carte (Bas)</label>
           <div className="color-picker-row">
-            <input type="color" value={colors.cardBgBottom} onChange={e => setColors({...colors, cardBgBottom: e.target.value})} />
+            <input 
+              type="color" 
+              value={colors.cardBgBottom} 
+              onChange={e => setColors({...colors, cardBgBottom: e.target.value})} 
+            />
             <span>{colors.cardBgBottom}</span>
           </div>
         </div>
+
         <div className="form-group">
           <label>Bordure Principale</label>
           <div className="color-picker-row">
-            <input type="color" value={colors.borderColor} onChange={e => setColors({...colors, borderColor: e.target.value})} />
+            <input 
+              type="color" 
+              value={colors.borderColor} 
+              onChange={e => setColors({...colors, borderColor: e.target.value})} 
+            />
             <span>{colors.borderColor}</span>
           </div>
         </div>
+
         <div className="form-group">
           <label>Couleur Heure</label>
           <div className="color-picker-row">
-            <input type="color" value={colors.timeColor} onChange={e => setColors({...colors, timeColor: e.target.value})} />
+            <input 
+              type="color" 
+              value={colors.timeColor} 
+              onChange={e => setColors({...colors, timeColor: e.target.value})} 
+            />
             <span>{colors.timeColor}</span>
+          </div>
+        </div>
+
+        <div className="form-group">
+          <label>Couleur Chaîne</label>
+          <div className="color-picker-row">
+            <input 
+              type="color" 
+              value={colors.channelColor} 
+              onChange={e => setColors({...colors, channelColor: e.target.value})} 
+            />
+            <span>{colors.channelColor}</span>
+          </div>
+        </div>
+
+        <div className="form-group">
+          <label>Couleur Texte</label>
+          <div className="color-picker-row">
+            <input 
+              type="color" 
+              value={colors.textColor} 
+              onChange={e => setColors({...colors, textColor: e.target.value})} 
+            />
+            <span>{colors.textColor}</span>
           </div>
         </div>
       </div>
@@ -241,19 +252,21 @@ const RugbyTemplate = () => {
       {/* CENTRE : Preview */}
       <div className="preview-area">
         <div style={{ width: '100%', maxWidth: '380px' }}>
-          <Preview 
-            type="button-card" 
-            config={cardConfig} 
-            hass={mockHass} 
-          />
+          {mockHass && (
+            <Preview 
+              type="button-card" 
+              config={cardConfig} 
+              hass={mockHass} 
+            />
+          )}
         </div>
       </div>
 
-      {/* DROITE : Code */}
+      {/* DROITE : Code YAML */}
       <div className="code-area">
         <div style={{padding: '20px 20px 0 20px'}}>
-          <h2 style={{border: 'none', color: 'white'}}>Code YAML</h2>
-          <p style={{fontSize: '0.8rem', color:'#aaa'}}>Copie ce code dans une carte manuelle.</p>
+          <h2 style={{border: 'none', color: 'white'}}>📋 Code YAML</h2>
+          <p style={{fontSize: '0.8rem', color:'#aaa'}}>Copie ce code dans une carte manuelle Home Assistant.</p>
         </div>
         <textarea 
           className="code-editor"
@@ -261,9 +274,10 @@ const RugbyTemplate = () => {
           value={yamlCode} 
         />
         <button className="copy-btn" onClick={copyCode}>
-          COPIER LE CODE
+          📋 COPIER LE CODE
         </button>
       </div>
+
     </div>
   );
 };
