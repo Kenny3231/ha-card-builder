@@ -6,7 +6,17 @@ const Preview = ({ type, config, hass }) => {
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
-    if (!containerRef.current || !config || !hass) return;
+    console.log('🔍 Debug Preview:');
+    console.log('- type:', type);
+    console.log('- containerRef:', containerRef.current);
+    console.log('- config:', config);
+    console.log('- hass:', hass);
+    console.log('- button-card enregistré ?', customElements.get('button-card'));
+
+    if (!containerRef.current || !config || !hass) {
+      console.log('❌ Manque containerRef, config ou hass');
+      return;
+    }
 
     // ✅ CORRECTION : Utiliser 'button-card' au lieu de 'custom-button-card'
     const cardTag = type === 'button-card' ? 'button-card' : 'custom-bubble-card';
@@ -83,15 +93,5 @@ const Preview = ({ type, config, hass }) => {
     </div>
   );
 };
-
-useEffect(() => {
-  console.log('🔍 Debug Preview:');
-  console.log('- containerRef:', containerRef.current);
-  console.log('- config:', config);
-  console.log('- hass:', hass);
-  console.log('- button-card enregistré ?', customElements.get('button-card'));
-  
-  // ... reste du code
-}, [type, config, hass]);
 
 export default Preview;
