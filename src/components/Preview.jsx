@@ -4,92 +4,92 @@ const Preview = ({ type, config, hass }) => {
   const containerRef = useRef(null);
   const [status, setStatus] = useState('loading');
   const [errorMessage, setErrorMessage] = useState('');
+  const [isDefined, setIsDefined] = useState(false);
+
+  // 1. Gestion du nom du tag (custom-button-card)
+  const cardTag = type === 'button-card' ? 'custom-button-card' : `custom-${type}`;
 
   useEffect(() => {
-    console.log('🔍 Debug Preview:');
-    console.log('- type:', type);
-    console.log('- containerRef:', containerRef.current);
-    console.log('- config:', config);
-    console.log('- hass:', hass);
-    console.log('- button-card enregistré ?', customElements.get('button-card'));
-
-    if (!containerRef.current || !config || !hass) {
-      console.log('❌ Manque containerRef, config ou hass');
-      return;
-    }
-
-    // ✅ CORRECTION : Utiliser 'button-card' au lieu de 'custom-button-card'
-    const cardTag = type === 'button-card' ? 'button-card' : 'custom-bubble-card';
-    
-    const isRegistered = customElements.get(cardTag);
-
-    if (!isRegistered) {
-      customElements.whenDefined(cardTag).then(() => {
-        renderCard(cardTag);
-      }).catch(() => {
-        setStatus('error');
-        setErrorMessage(`Le plugin ${cardTag} n'est pas chargé. Vérifiez le fichier button-card.js dans /public/plugins/`);
-      });
-
-      setTimeout(() => {
-        if (!customElements.get(cardTag)) {
-          setStatus('error');
-          setErrorMessage(`TIMEOUT: Impossible de charger ${cardTag}. Le fichier button-card.js est probablement introuvable.`);
-        }
-      }, 3000);
-    } else {
-      renderCard(cardTag);
-    }
-
-    function renderCard(tag) {
-      try {
-        const element = document.createElement(tag);
-        
-        if (typeof element.setConfig !== 'function') {
-          throw new Error("La méthode setConfig n'existe pas. Le plugin est mal chargé.");
-        }
-        
-        element.setConfig(config);
-        element.hass = hass;
-        
-        containerRef.current.innerHTML = '';
-        containerRef.current.appendChild(element);
+    const loadScript = async () => {
+      // Si déjà chargé, on ne fait rien
+      if (customElements.get(cardTag)) {
+        setIsDefined(true);
         setStatus('success');
-      } catch (e) {
-        console.error('Erreur lors du rendu:', e);
-        setStatus('error');
-        setErrorMessage(e.message);
+        return;
       }
-    }
 
-  }, [type, config, hass]);
+      console.log(`📦 Chargement du script pour ${cardTag}...`);
+      
+      const script = document.createElement('script');
+      script.type = 'module';
+      
+      // --- CORRECTION DU CHEMIN ICI ---
+      // On récupère le chemin de base (ex: "/" en local, ou "/mon-repo/" sur GitHub)
+      const baseUrl = import.meta.env.BASE_URL.endsWith('/') 
+        ? import.meta.env.BASE_URL 
+        : `${import.meta.env.BASE_URL}/`;
+        
+      // On construit l'URL complète
+      script.src = `${baseUrl}plugins/${type}.js`;
+      
+      console.log(`🔍 Tentative de lecture : ${script.src}`); // Regarde ça dans la console F12
+
+      script.onload = () => {
+        console.log(`✅ Script ${type}.js téléchargé`);
+        customElements.whenDefined(cardTag).then(() => {
+          console.log(`✅ Web Component ${cardTag} enregistré`);
+          setIsDefined(true);
+        });
+      };
+
+      script.onerror = () => {
+        setStatus('error');
+        setErrorMessage(`Impossible de charger le fichier : ${script.src}. Vérifie qu'il est bien dans public/plugins/`);
+      };
+
+      document.head.appendChild(script);
+    };
+
+    loadScript();
+  }, [type, cardTag]);
+
+  // 2. Rendu de la carte
+  useEffect(() => {
+    // On attend que tout soit prêt (script chargé + ref DOM + config + hass)
+    if (!isDefined || !containerRef.current || !config || !hass) return;
+
+    try {
+      containerRef.current.innerHTML = '';
+      
+      const element = document.createElement(cardTag);
+      
+      // Vérification ultime avant d'appeler setConfig
+      if (typeof element.setConfig !== 'function') {
+        throw new Error(`Le composant ${cardTag} existe mais n'a pas de méthode setConfig.`);
+      }
+
+      element.setConfig(config);
+      element.hass = hass;
+
+      containerRef.current.appendChild(element);
+      setStatus('success');
+      
+    } catch (e) {
+      console.error(e);
+      setStatus('error');
+      setErrorMessage(e.message);
+    }
+  }, [isDefined, config, hass, cardTag]);
 
   return (
-    <div style={{ width: '100%', display: 'flex', justifyContent: 'center', flexDirection: 'column', gap: '10px' }}>
-      
-      {status === 'loading' && (
-        <div style={{ background: '#1e293b', color: '#94a3b8', padding: '15px', borderRadius: '8px', textAlign: 'center' }}>
-          Chargement du plugin button-card...
-        </div>
-      )}
-
+    <div className="preview-wrapper" style={{ width: '100%', minHeight: '200px' }}>
       {status === 'error' && (
-        <div style={{ background: '#7f1d1d', color: '#fca5a5', padding: '15px', borderRadius: '8px', textAlign: 'center' }}>
-          <strong>⚠️ Erreur critique :</strong><br/>
-          {errorMessage}<br/>
-          <small style={{display:'block', marginTop:'10px', color: '#fff'}}>
-            Vérifiez que le fichier <code>/public/plugins/button-card.js</code> existe bien.
-          </small>
+        <div style={{ background: '#451a1a', color: '#fca5a5', padding: '15px', borderRadius: '8px', border: '1px solid #7f1d1d' }}>
+          <strong>⚠️ Erreur :</strong> {errorMessage}
         </div>
       )}
-
-      <div 
-        ref={containerRef} 
-        style={{ 
-          display: status === 'success' ? 'block' : 'none',
-          width: '100%'
-        }}
-      ></div>
+      
+      <div ref={containerRef} style={{ display: status === 'success' ? 'block' : 'none' }}></div>
     </div>
   );
 };

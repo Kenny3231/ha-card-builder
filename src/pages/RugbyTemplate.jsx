@@ -3,7 +3,6 @@ import Preview from '../components/Preview';
 import yaml from 'js-yaml';
 
 const RugbyTemplate = () => {
-  // Couleurs personnalisables
   const [colors, setColors] = useState({
     cardBgTop: '#333333',
     cardBgBottom: '#1a1a1a',
@@ -13,7 +12,6 @@ const RugbyTemplate = () => {
     channelColor: '#e67e22'
   });
 
-  // Configuration de la carte générée dynamiquement
   const cardConfig = useMemo(() => {
     return {
       type: 'custom:button-card',
@@ -89,11 +87,9 @@ const RugbyTemplate = () => {
             </div>
           \`;
         ]]]`,
-        
         channel: `[[[
           var location = entity.attributes.location || "";
           var channelLogo = \`/local/images/rugby/chaines/\${location}.svg\`;
-          
           return \`
             <div style="
               background: linear-gradient(180deg, #3a2d22 0%, ${colors.cardBgBottom} 100%);
@@ -105,18 +101,15 @@ const RugbyTemplate = () => {
               align-items: center;
             ">
               <div style="font-size: 9px; color: ${colors.channelColor}; margin-bottom: 4px; text-transform: uppercase; font-weight: 900; letter-spacing: 1px;">Diffusion</div>
-              <img src="\${channelLogo}" style="height: 70px; max-width: 90%; object-fit: contain;" 
-                   onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-              <div style="display:none; font-weight:bold; color:${colors.textColor}; font-size: 12px;">\${location}</div>
+              <img src="\${channelLogo}" style="height: 70px; max-width: 90%; object-fit: contain;" onerror="this.style.display='none';">
+              <div style="font-weight:bold; color:${colors.textColor}; font-size: 12px;">\${location}</div>
             </div>
           \`;
         ]]]`,
-        
         time: `[[[
           var start = new Date(entity.attributes.start_time);
           var dateOptions = { weekday: 'long', day: 'numeric', month: 'long' };
           var timeStr = start.toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'}).replace(':','h');
-          
           return \`
             <div style="
               background: linear-gradient(180deg, #223328 0%, ${colors.cardBgBottom} 100%);
@@ -137,147 +130,87 @@ const RugbyTemplate = () => {
     };
   }, [colors]);
 
-  // Mock Hass avec données exemple
+  // CORRECTION CRITIQUE ICI : Objet HASS complet
   const mockHass = useMemo(() => {
     const message = "Top14 - Toulouse vs Bordeaux";
     const fullDate = new Date('2026-01-20T21:00:00');
 
     return {
+      // 1. Les états
       states: {
         "calendar.calendrier_allrugby": {
+          entity_id: "calendar.calendrier_allrugby",
           state: "on",
           attributes: {
             message: message,
             location: "BeIn Sport 1",
             start_time: fullDate.toISOString(),
+            friendly_name: "Rugby"
           }
+        },
+        "binary_sensor.match_rugby_cette_semaine": { 
+            entity_id: "binary_sensor.match_rugby_cette_semaine",
+            state: "on" 
         }
       },
+      // 2. Configuration Système (Indispensable pour button-card)
+      config: {
+        state: "RUNNING",
+        unit_system: { temperature: "°C", length: "km", mass: "kg", volume: "L" },
+        version: "2024.1.0",
+        components: ["calendar", "button_card"]
+      },
+      // 3. Infos utilisateur
+      user: { is_owner: true, name: "Demo" },
+      // 4. Langue et Localisation
       language: "fr",
-      locale: { language: "fr" },
-      themes: { darkMode: true },
+      resources: {},
+      themes: { default_theme: "default", themes: {} },
+      selectedTheme: "default",
+      locale: { language: "fr", number_format: "comma_period" },
+      // 5. Fonction de localisation factice (pour éviter d'autres erreurs)
+      localize: (key) => key
     };
   }, []);
 
-  // YAML généré automatiquement
   const yamlCode = useMemo(() => yaml.dump(cardConfig), [cardConfig]);
 
   const copyCode = () => {
     navigator.clipboard.writeText(yamlCode);
-    alert("Code copié dans le presse-papier !");
+    alert("Code copié !");
   };
 
   return (
     <div className="builder-container">
-      
-      {/* GAUCHE : Paramètres de couleurs uniquement */}
+      {/* SIDEBAR */}
       <div className="sidebar">
-        <h2>⚙️ Configuration</h2>
-        
-        <h3>🎨 Design & Couleurs</h3>
-        
+        <h2>⚙️ Config</h2>
         <div className="form-group">
-          <label>Fond Carte (Haut)</label>
-          <div className="color-picker-row">
-            <input 
-              type="color" 
-              value={colors.cardBgTop} 
-              onChange={e => setColors({...colors, cardBgTop: e.target.value})} 
-            />
-            <span>{colors.cardBgTop}</span>
-          </div>
+           <label>Fond Haut</label>
+           <div className="color-picker-row"><input type="color" value={colors.cardBgTop} onChange={e => setColors({...colors, cardBgTop: e.target.value})} /></div>
         </div>
-
         <div className="form-group">
-          <label>Fond Carte (Bas)</label>
-          <div className="color-picker-row">
-            <input 
-              type="color" 
-              value={colors.cardBgBottom} 
-              onChange={e => setColors({...colors, cardBgBottom: e.target.value})} 
-            />
-            <span>{colors.cardBgBottom}</span>
-          </div>
+           <label>Fond Bas</label>
+           <div className="color-picker-row"><input type="color" value={colors.cardBgBottom} onChange={e => setColors({...colors, cardBgBottom: e.target.value})} /></div>
         </div>
-
         <div className="form-group">
-          <label>Bordure Principale</label>
-          <div className="color-picker-row">
-            <input 
-              type="color" 
-              value={colors.borderColor} 
-              onChange={e => setColors({...colors, borderColor: e.target.value})} 
-            />
-            <span>{colors.borderColor}</span>
-          </div>
-        </div>
-
-        <div className="form-group">
-          <label>Couleur Heure</label>
-          <div className="color-picker-row">
-            <input 
-              type="color" 
-              value={colors.timeColor} 
-              onChange={e => setColors({...colors, timeColor: e.target.value})} 
-            />
-            <span>{colors.timeColor}</span>
-          </div>
-        </div>
-
-        <div className="form-group">
-          <label>Couleur Chaîne</label>
-          <div className="color-picker-row">
-            <input 
-              type="color" 
-              value={colors.channelColor} 
-              onChange={e => setColors({...colors, channelColor: e.target.value})} 
-            />
-            <span>{colors.channelColor}</span>
-          </div>
-        </div>
-
-        <div className="form-group">
-          <label>Couleur Texte</label>
-          <div className="color-picker-row">
-            <input 
-              type="color" 
-              value={colors.textColor} 
-              onChange={e => setColors({...colors, textColor: e.target.value})} 
-            />
-            <span>{colors.textColor}</span>
-          </div>
+           <label>Bordure</label>
+           <div className="color-picker-row"><input type="color" value={colors.borderColor} onChange={e => setColors({...colors, borderColor: e.target.value})} /></div>
         </div>
       </div>
 
-      {/* CENTRE : Preview */}
+      {/* PREVIEW */}
       <div className="preview-area">
         <div style={{ width: '100%', maxWidth: '380px' }}>
-          {mockHass && (
-            <Preview 
-              type="button-card" 
-              config={cardConfig} 
-              hass={mockHass} 
-            />
-          )}
+          <Preview type="button-card" config={cardConfig} hass={mockHass} />
         </div>
       </div>
 
-      {/* DROITE : Code YAML */}
+      {/* CODE */}
       <div className="code-area">
-        <div style={{padding: '20px 20px 0 20px'}}>
-          <h2 style={{border: 'none', color: 'white'}}>📋 Code YAML</h2>
-          <p style={{fontSize: '0.8rem', color:'#aaa'}}>Copie ce code dans une carte manuelle Home Assistant.</p>
-        </div>
-        <textarea 
-          className="code-editor"
-          readOnly 
-          value={yamlCode} 
-        />
-        <button className="copy-btn" onClick={copyCode}>
-          📋 COPIER LE CODE
-        </button>
+        <textarea className="code-editor" readOnly value={yamlCode} />
+        <button className="copy-btn" onClick={copyCode}>Copier</button>
       </div>
-
     </div>
   );
 };
