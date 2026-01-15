@@ -1,123 +1,111 @@
 :root {
-  --bg-app: #0f172a;       /* Gris bleuté très sombre (Slate 900) */
-  --bg-panel: #1e293b;     /* Gris bleuté (Slate 800) */
-  --text-main: #f8fafc;    /* Blanc cassé */
-  --text-muted: #94a3b8;   /* Gris clair */
-  --primary: #3b82f6;      /* Bleu moderne */
+  --bg-dark: #0f172a;
+  --bg-panel: #1e293b;
+  --text-main: #f1f5f9;
+  --primary: #3b82f6;
   --border: #334155;
 }
 
 body {
   margin: 0;
-  background-color: var(--bg-app);
+  background-color: var(--bg-dark);
   color: var(--text-main);
-  font-family: 'Inter', system-ui, sans-serif;
-  -webkit-font-smoothing: antialiased;
+  font-family: 'Inter', sans-serif;
 }
 
-/* Layout Principal Grid / Flex */
+/* --- LAYOUT RESPONSIVE --- */
 .builder-container {
-  display: flex;
-  flex-direction: row;
+  display: grid;
   height: 100vh;
+  width: 100%;
+  /* Desktop : 3 colonnes (320px | Reste | 350px) */
+  grid-template-columns: 320px 1fr 350px;
+  grid-template-rows: 1fr;
+  grid-template-areas: "sidebar preview code";
   overflow: hidden;
 }
 
-/* Responsive: Sur mobile, on passe en colonne et on scroll */
-@media (max-width: 900px) {
+/* MOBILE : Tout change ici */
+@media (max-width: 1000px) {
   .builder-container {
+    display: flex;
     flex-direction: column;
     height: auto;
     overflow-y: auto;
   }
+
+  /* Sur mobile, la Sidebar passe en dessous de la preview */
+  .sidebar { order: 2; width: 100% !important; height: auto; border-right: none; border-top: 1px solid var(--border); }
+  
+  /* La preview est en premier et collante */
+  .preview-area { 
+    order: 1; 
+    min-height: 300px; 
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    border-bottom: 2px solid var(--primary);
+  }
+  
+  .code-area { order: 3; width: 100% !important; height: auto; min-height: 400px; }
 }
 
-/* --- Sidebar (Customisation) --- */
+/* --- 1. SIDEBAR (Options) --- */
 .sidebar {
-  width: 320px;
+  grid-area: sidebar;
   background: var(--bg-panel);
   border-right: 1px solid var(--border);
   padding: 20px;
   overflow-y: auto;
-  flex-shrink: 0;
 }
 
-@media (max-width: 900px) {
-  .sidebar { width: 100%; box-sizing: border-box; }
-}
+h2 { font-size: 1.1rem; color: var(--primary); margin-top: 0; text-transform: uppercase; letter-spacing: 1px; }
+h3 { font-size: 0.9rem; color: #94a3b8; margin-top: 25px; margin-bottom: 10px; text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
 
-h2 { font-size: 1.2rem; margin-top: 0; border-bottom: 2px solid var(--primary); padding-bottom: 10px; display: inline-block;}
-h3 { font-size: 1rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 20px;}
-
-.form-group { margin-bottom: 15px; }
-.form-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px; }
-.form-group input[type="text"],
-.form-group input[type="date"],
-.form-group input[type="time"] {
-  width: 100%;
-  padding: 10px;
-  background: #0f172a;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  color: white;
-  box-sizing: border-box;
-  transition: border 0.2s;
+.form-group { margin-bottom: 12px; }
+.form-group label { display: block; font-size: 0.8rem; margin-bottom: 4px; color: #cbd5e1; }
+.form-group input {
+  width: 100%; box-sizing: border-box; padding: 10px;
+  background: var(--bg-dark); border: 1px solid var(--border);
+  color: white; border-radius: 6px;
 }
 .form-group input:focus { outline: none; border-color: var(--primary); }
 
-/* Color Pickers modernes */
-.color-picker-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-  background: #0f172a;
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-}
-.color-picker-row input[type="color"] {
-  background: none; border: none; width: 30px; height: 30px; cursor: pointer; padding: 0;
-}
+.color-row { display: flex; align-items: center; gap: 10px; background: var(--bg-dark); padding: 5px; border-radius: 6px; border: 1px solid var(--border); }
+.color-row input[type="color"] { border: none; background: none; width: 30px; height: 30px; padding: 0; cursor: pointer; }
 
-/* --- Preview Area (Centre) --- */
+/* --- 2. PREVIEW (Centre) --- */
 .preview-area {
-  flex: 1;
+  grid-area: preview;
+  background-color: #020617;
+  background-image: radial-gradient(#1e293b 1px, transparent 1px);
+  background-size: 20px 20px;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-image: radial-gradient(#334155 1px, transparent 1px);
-  background-size: 20px 20px; /* Effet grille subtile */
+  position: relative;
   padding: 20px;
-  min-height: 400px;
 }
 
-/* --- Code Area (Droite) --- */
+/* --- 3. CODE (Droite) --- */
 .code-area {
-  width: 350px;
-  background: #0b1120; /* Plus sombre pour le code */
+  grid-area: code;
+  background: #000;
   border-left: 1px solid var(--border);
   display: flex;
   flex-direction: column;
 }
-
-@media (max-width: 900px) {
-  .code-area { width: 100%; min-height: 400px; }
-}
-
-textarea.code-editor {
+.code-editor {
   flex: 1;
-  background: transparent;
+  background: #0b1120;
   color: #a5b4fc;
   border: none;
   padding: 15px;
-  font-family: 'Fira Code', monospace;
-  font-size: 0.85rem;
+  font-family: monospace;
   resize: none;
   outline: none;
+  font-size: 0.85rem;
 }
-
 .copy-btn {
   padding: 15px;
   background: var(--primary);
@@ -125,8 +113,4 @@ textarea.code-editor {
   border: none;
   font-weight: bold;
   cursor: pointer;
-  transition: background 0.2s;
 }
-.copy-btn:hover { background: #2563eb; }
-
-.error-box { color: #ef4444; background: #451a1a; padding: 10px; border-radius: 6px; border: 1px solid #ef4444; }
