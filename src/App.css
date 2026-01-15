@@ -1,60 +1,132 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+:root {
+  --bg-app: #0f172a;       /* Gris bleuté très sombre (Slate 900) */
+  --bg-panel: #1e293b;     /* Gris bleuté (Slate 800) */
+  --text-main: #f8fafc;    /* Blanc cassé */
+  --text-muted: #94a3b8;   /* Gris clair */
+  --primary: #3b82f6;      /* Bleu moderne */
+  --border: #334155;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+body {
+  margin: 0;
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+/* Layout Principal Grid / Flex */
+.builder-container {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Responsive: Sur mobile, on passe en colonne et on scroll */
+@media (max-width: 900px) {
+  .builder-container {
+    flex-direction: column;
+    height: auto;
+    overflow-y: auto;
   }
-  to {
-    transform: rotate(360deg);
-  }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+/* --- Sidebar (Customisation) --- */
+.sidebar {
+  width: 320px;
+  background: var(--bg-panel);
+  border-right: 1px solid var(--border);
+  padding: 20px;
+  overflow-y: auto;
+  flex-shrink: 0;
 }
 
-.card {
-  padding: 2em;
+@media (max-width: 900px) {
+  .sidebar { width: 100%; box-sizing: border-box; }
 }
 
-.read-the-docs {
-  color: #888;
-}
+h2 { font-size: 1.2rem; margin-top: 0; border-bottom: 2px solid var(--primary); padding-bottom: 10px; display: inline-block;}
+h3 { font-size: 1rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 20px;}
 
-.form-group {
-  margin-bottom: 15px;
-}
-.form-group label {
-  display: block;
-  margin-bottom: 5px;
-  color: #ccc;
-  font-size: 0.9em;
-}
-.form-group input {
+.form-group { margin-bottom: 15px; }
+.form-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px; }
+.form-group input[type="text"],
+.form-group input[type="date"],
+.form-group input[type="time"] {
   width: 100%;
-  padding: 8px;
-  background: #333;
-  border: 1px solid #444;
+  padding: 10px;
+  background: #0f172a;
+  border: 1px solid var(--border);
+  border-radius: 6px;
   color: white;
-  border-radius: 4px;
+  box-sizing: border-box;
+  transition: border 0.2s;
 }
+.form-group input:focus { outline: none; border-color: var(--primary); }
+
+/* Color Pickers modernes */
+.color-picker-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  background: #0f172a;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+.color-picker-row input[type="color"] {
+  background: none; border: none; width: 30px; height: 30px; cursor: pointer; padding: 0;
+}
+
+/* --- Preview Area (Centre) --- */
+.preview-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-image: radial-gradient(#334155 1px, transparent 1px);
+  background-size: 20px 20px; /* Effet grille subtile */
+  padding: 20px;
+  min-height: 400px;
+}
+
+/* --- Code Area (Droite) --- */
+.code-area {
+  width: 350px;
+  background: #0b1120; /* Plus sombre pour le code */
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 900px) {
+  .code-area { width: 100%; min-height: 400px; }
+}
+
+textarea.code-editor {
+  flex: 1;
+  background: transparent;
+  color: #a5b4fc;
+  border: none;
+  padding: 15px;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.85rem;
+  resize: none;
+  outline: none;
+}
+
+.copy-btn {
+  padding: 15px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.copy-btn:hover { background: #2563eb; }
+
+.error-box { color: #ef4444; background: #451a1a; padding: 10px; border-radius: 6px; border: 1px solid #ef4444; }
