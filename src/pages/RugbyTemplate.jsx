@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Preview from '../components/Preview';
-import jsyaml from 'js-yaml';
+import yaml from 'js-yaml';
 
 const RugbyTemplate = () => {
-  // 1. Données du match
   const [form, setForm] = useState({
     teamA: 'Toulouse',
     teamB: 'Bordeaux',
@@ -13,23 +12,20 @@ const RugbyTemplate = () => {
     time: '21:00'
   });
 
-  // 2. Couleurs personnalisables (Valeurs par défaut)
   const [colors, setColors] = useState({
     cardBgTop: '#333333',
     cardBgBottom: '#1a1a1a',
-    borderColor: '#f1c40f', // Jaune Top14
+    borderColor: '#f1c40f',
     textColor: '#ffffff',
     timeColor: '#2ecc71',
     channelColor: '#e67e22'
   });
 
-  const [mockHass, setMockHass] = useState(null);
-
-  // 3. Construction dynamique de la config en fonction des couleurs choisies
-  const getCardConfig = () => {
+  // ✅ Génération dynamique de la config avec useMemo
+  const cardConfig = useMemo(() => {
     return {
       type: 'custom:button-card',
-      entity: 'calendar.calendrier_allrugby', // Entité fictive pour l'exemple
+      entity: 'calendar.calendrier_allrugby',
       show_name: false,
       show_icon: false,
       tap_action: { action: 'none' },
@@ -47,8 +43,8 @@ const RugbyTemplate = () => {
         ]
       },
       custom_fields: {
+        // ✅ Injection directe des couleurs dans le template
         match: `[[[
-          // --- LOGIQUE JS ---
           var msg = entity.attributes.message || "";
           var parts = msg.split(' - ');
           var competition = parts.length > 1 ? parts[0] : "Rugby";
@@ -71,10 +67,9 @@ const RugbyTemplate = () => {
                 <img src="\${vsLogo}" style="width: 70px; height: 70px; object-fit: contain; filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.5));">
                 <img src="\${logoB}" style="max-width: 85px; max-height: 85px; width: auto; height: auto; object-fit: contain;">
               </div>
-              \`;
+            \`;
           }
   
-          // --- RENDU HTML avec couleurs injectées ---
           return \`
             <div style="
               background: linear-gradient(180deg, ${colors.cardBgTop} 60%, ${colors.cardBgBottom} 100%);
@@ -103,6 +98,7 @@ const RugbyTemplate = () => {
             </div>
           \`;
         ]]]`,
+        
         channel: `[[[
           var location = entity.attributes.location || "";
           var channelLogo = \`/local/images/rugby/chaines/\${location}.svg\`;
@@ -124,6 +120,7 @@ const RugbyTemplate = () => {
             </div>
           \`;
         ]]]`,
+        
         time: `[[[
           var start = new Date(entity.attributes.start_time);
           var dateOptions = { weekday: 'long', day: 'numeric', month: 'long' };
@@ -147,14 +144,14 @@ const RugbyTemplate = () => {
         ]]]`
       }
     };
-  };
+  }, [colors]); // ✅ Regénère la config quand les couleurs changent
 
-  // Mise à jour de MockHass
-  useEffect(() => {
+  // Mock Hass avec useMemo
+  const mockHass = useMemo(() => {
     const message = `${form.competition} - ${form.teamA} vs ${form.teamB}`;
     const fullDate = new Date(`${form.date}T${form.time}:00`);
 
-    setMockHass({
+    return {
       states: {
         "calendar.calendrier_allrugby": {
           state: "on",
@@ -163,34 +160,47 @@ const RugbyTemplate = () => {
             location: form.channel,
             start_time: fullDate.toISOString(),
           }
-        },
-        "binary_sensor.match_rugby_cette_semaine": { state: "on" }
+        }
       },
       language: "fr",
       locale: { language: "fr" },
       themes: { darkMode: true },
-    });
+    };
   }, [form]);
 
+  // ✅ YAML généré automatiquement
+  const yamlCode = useMemo(() => yaml.dump(cardConfig), [cardConfig]);
+
   const copyCode = () => {
-    const yaml = jsyaml.dump(getCardConfig());
-    navigator.clipboard.writeText(yaml);
-    alert("Code copié dans le presse-papier !");
+    navigator.clipboard.writeText(yamlCode);
+    alert("Code copié !");
   };
 
   return (
     <div className="builder-container">
-      
-      {/* 1. GAUCHE : Paramètres */}
+      {/* GAUCHE : Paramètres */}
       <div className="sidebar">
         <h2>Configuration</h2>
         
         <h3>Données</h3>
-        <div className="form-group"><label>Compétition</label><input type="text" value={form.competition} onChange={e => setForm({...form, competition: e.target.value})} /></div>
-        <div className="form-group"><label>Équipe A</label><input type="text" value={form.teamA} onChange={e => setForm({...form, teamA: e.target.value})} /></div>
-        <div className="form-group"><label>Équipe B</label><input type="text" value={form.teamB} onChange={e => setForm({...form, teamB: e.target.value})} /></div>
-        <div className="form-group"><label>Chaîne</label><input type="text" value={form.channel} onChange={e => setForm({...form, channel: e.target.value})} /></div>
-        <div className="form-group"><label>Date & Heure</label>
+        <div className="form-group">
+          <label>Compétition</label>
+          <input type="text" value={form.competition} onChange={e => setForm({...form, competition: e.target.value})} />
+        </div>
+        <div className="form-group">
+          <label>Équipe A</label>
+          <input type="text" value={form.teamA} onChange={e => setForm({...form, teamA: e.target.value})} />
+        </div>
+        <div className="form-group">
+          <label>Équipe B</label>
+          <input type="text" value={form.teamB} onChange={e => setForm({...form, teamB: e.target.value})} />
+        </div>
+        <div className="form-group">
+          <label>Chaîne</label>
+          <input type="text" value={form.channel} onChange={e => setForm({...form, channel: e.target.value})} />
+        </div>
+        <div className="form-group">
+          <label>Date & Heure</label>
           <div style={{display:'flex', gap:'5px'}}>
             <input type="date" value={form.date} onChange={e => setForm({...form, date: e.target.value})} />
             <input type="time" value={form.time} onChange={e => setForm({...form, time: e.target.value})} />
@@ -228,20 +238,18 @@ const RugbyTemplate = () => {
         </div>
       </div>
 
-      {/* 2. CENTRE : Preview */}
+      {/* CENTRE : Preview */}
       <div className="preview-area">
         <div style={{ width: '100%', maxWidth: '380px' }}>
-          {mockHass && (
-            <Preview 
-              type="button-card" 
-              config={getCardConfig()} 
-              hass={mockHass} 
-            />
-          )}
+          <Preview 
+            type="button-card" 
+            config={cardConfig} 
+            hass={mockHass} 
+          />
         </div>
       </div>
 
-      {/* 3. DROITE : Code */}
+      {/* DROITE : Code */}
       <div className="code-area">
         <div style={{padding: '20px 20px 0 20px'}}>
           <h2 style={{border: 'none', color: 'white'}}>Code YAML</h2>
@@ -250,13 +258,12 @@ const RugbyTemplate = () => {
         <textarea 
           className="code-editor"
           readOnly 
-          value={jsyaml.dump(getCardConfig())} 
+          value={yamlCode} 
         />
         <button className="copy-btn" onClick={copyCode}>
           COPIER LE CODE
         </button>
       </div>
-
     </div>
   );
 };

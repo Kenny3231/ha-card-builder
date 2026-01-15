@@ -8,7 +8,7 @@ const Preview = ({ type, config, hass }) => {
   useEffect(() => {
     if (!containerRef.current) return;
 
-    const cardTag = type === 'button-card' ? 'custom-button-card' : 'custom-bubble-card';
+    const cardTag = type === 'button-card' ? 'button-card' : 'custom-bubble-card';
     
     // 1. Vérifier si le Custom Element est enregistré dans le navigateur
     const isRegistered = customElements.get(cardTag);
