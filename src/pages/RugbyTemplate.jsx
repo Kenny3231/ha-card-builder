@@ -173,6 +173,20 @@ const RugbyTemplate = () => {
     };
   }, []);
 
+  const previewConfig = useMemo(() => {
+    const config = JSON.parse(JSON.stringify(cardConfig));
+    const basePath = import.meta.env.BASE_URL;
+
+    if (config.custom_fields && basePath !== '/') {
+      Object.keys(config.custom_fields).forEach(key => {
+        if (typeof config.custom_fields[key] === 'string') {
+          config.custom_fields[key] = config.custom_fields[key].replace(/\/local\//g, `${basePath}local/`);
+        }
+      });
+    }
+    return config;
+  }, [cardConfig]);
+
   const yamlCode = useMemo(() => yaml.dump(cardConfig), [cardConfig]);
 
   const copyCode = () => {
@@ -202,7 +216,7 @@ const RugbyTemplate = () => {
       {/* PREVIEW */}
       <div className="preview-area">
         <div style={{ width: '100%', maxWidth: '380px' }}>
-          <Preview type="button-card" config={cardConfig} hass={mockHass} />
+          <Preview type="button-card" config={previewConfig} hass={mockHass} />
         </div>
       </div>
 
