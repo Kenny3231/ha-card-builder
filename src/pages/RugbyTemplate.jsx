@@ -5,11 +5,6 @@ import yaml from 'js-yaml';
 
 const RugbyTemplate = () => {
   const [colors, setColors] = useState({
-    cardBgTop: '#333333',
-    cardBgBottom: '#1a1a1a',
-    borderColor: '#f1c40f',
-    timeColor: '#2ecc71',
-    channelColor: '#e67e22',
     mborder: '#f1c40f',
     mhaut: '#333333',
     mbas: '#1a1a1a',
