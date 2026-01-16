@@ -178,15 +178,19 @@ const RugbyTemplate = () => {
     const basePath = import.meta.env.BASE_URL;
 
     if (basePath !== '/') {
-      config.variables = {
-        basePath: basePath
-      };
-      
       Object.keys(config.custom_fields).forEach(key => {
         let field = config.custom_fields[key];
         if (typeof field === 'string') {
-          field = field.replace(/\/local\//g, `[[[ return variables.basePath + 'local/' ]]]`);
-          config.custom_fields[key] = field;
+          // Ajoute une variable basePath au début du script JS
+          const jsCode = `
+            var basePath = '${basePath}';
+            ${field.substring(field.indexOf('[[[') + 3, field.lastIndexOf(']]]'))}
+          `;
+          
+          // Remplace les chemins /local/ par basePath + 'local/'
+          const updatedCode = jsCode.replace(/\/local\//g, "basePath + 'local/'");
+          
+          config.custom_fields[key] = `[[[${updatedCode}]]]`;
         }
       });
     }
