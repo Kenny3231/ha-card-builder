@@ -177,14 +177,15 @@ const RugbyTemplate = () => {
     const config = JSON.parse(JSON.stringify(cardConfig));
     const basePath = import.meta.env.BASE_URL;
 
-    if (config.custom_fields && basePath !== '/') {
+    if (basePath !== '/') {
+      config.variables = {
+        basePath: basePath
+      };
+      
       Object.keys(config.custom_fields).forEach(key => {
         let field = config.custom_fields[key];
         if (typeof field === 'string') {
-          // Correction pour les attributs src="..."
-          field = field.replace(/src="\/local\//g, `src="${basePath}local/`);
-          // Correction pour les styles background-image: url('...')
-          field = field.replace(/url\('\/local\//g, `url('${basePath}local/`);
+          field = field.replace(/\/local\//g, `[[[ return variables.basePath + 'local/' ]]]`);
           config.custom_fields[key] = field;
         }
       });
