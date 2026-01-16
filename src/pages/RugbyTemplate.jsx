@@ -179,8 +179,13 @@ const RugbyTemplate = () => {
 
     if (config.custom_fields && basePath !== '/') {
       Object.keys(config.custom_fields).forEach(key => {
-        if (typeof config.custom_fields[key] === 'string') {
-          config.custom_fields[key] = config.custom_fields[key].replace(/\/local\//g, `${basePath}local/`);
+        let field = config.custom_fields[key];
+        if (typeof field === 'string') {
+          // Correction pour les attributs src="..."
+          field = field.replace(/src="\/local\//g, `src="${basePath}local/`);
+          // Correction pour les styles background-image: url('...')
+          field = field.replace(/url\('\/local\//g, `url('${basePath}local/`);
+          config.custom_fields[key] = field;
         }
       });
     }
