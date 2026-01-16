@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import Preview from '../components/Preview';
 import yaml from 'js-yaml';
 
@@ -7,9 +8,18 @@ const RugbyTemplate = () => {
     cardBgTop: '#333333',
     cardBgBottom: '#1a1a1a',
     borderColor: '#f1c40f',
-    textColor: '#ffffff',
     timeColor: '#2ecc71',
-    channelColor: '#e67e22'
+    channelColor: '#e67e22',
+    mborder: '#f1c40f',
+    mhaut: '#333333',
+    mbas: '#1a1a1a',
+    cborder: '#e67e22',
+    chaut: '#3a2d22',
+    cbas: '#1a1a1a',
+    hborder: '#2ecc71',
+    hhaut: '#223328',
+    hbas: '#1a1a1a',
+    textColor: '#ffffff'
   });
 
   const cardConfig = useMemo(() => {
@@ -61,8 +71,8 @@ const RugbyTemplate = () => {
   
           return \`
             <div style="
-              background: linear-gradient(180deg, ${colors.cardBgTop} 60%, ${colors.cardBgBottom} 100%);
-              border-left: 5px solid ${colors.borderColor};
+              background: linear-gradient(180deg, ${colors.mhaut} 60%, ${colors.mbas} 100%);
+              border-left: 5px solid ${colors.mborder};
               border-radius: 10px;
               position: relative;
               display: flex;
@@ -92,17 +102,17 @@ const RugbyTemplate = () => {
           var channelLogo = \`/local/images/rugby/chaines/\${location}.svg\`;
           return \`
             <div style="
-              background: linear-gradient(180deg, #3a2d22 0%, ${colors.cardBgBottom} 100%);
-              border-left: 5px solid ${colors.channelColor};
+              background: linear-gradient(180deg, ${colors.chaut} 0%, ${colors.cbas} 100%);
+              border-left: 5px solid ${colors.cborder};
               border-radius: 10px;
               padding: 8px;
               display: flex;
               flex-direction: column;
               align-items: center;
             ">
-              <div style="font-size: 9px; color: ${colors.channelColor}; margin-bottom: 4px; text-transform: uppercase; font-weight: 900; letter-spacing: 1px;">Diffusion</div>
+              <div style="font-size: 9px; color: ${colors.cborder}; margin-bottom: 4px; text-transform: uppercase; font-weight: 900; letter-spacing: 1px;">Diffusion</div>
               <img src="\${channelLogo}" style="height: 70px; max-width: 90%; object-fit: contain;" onerror="this.style.display='none';">
-              <div style="font-weight:bold; color:${colors.textColor}; font-size: 12px;">\${location}</div>
+              <div style="display:none;font-weight:bold; color:${colors.textColor}; font-size: 12px;">\${location}</div>
             </div>
           \`;
         ]]]`,
@@ -112,17 +122,17 @@ const RugbyTemplate = () => {
           var timeStr = start.toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'}).replace(':','h');
           return \`
             <div style="
-              background: linear-gradient(180deg, #223328 0%, ${colors.cardBgBottom} 100%);
-              border-left: 5px solid ${colors.timeColor};
+              background: linear-gradient(180deg, ${colors.hhaut} 0%, ${colors.hbas} 100%);
+              border-left: 5px solid ${colors.hborder};
               border-radius: 10px;
               padding: 8px;
               display: flex;
               flex-direction: column;
               align-items: center;
             ">
-               <div style="font-size: 9px; color: ${colors.timeColor}; margin-bottom: 2px; text-transform: uppercase; font-weight: 900; letter-spacing: 1px;">Coup d'envoi</div>
+               <div style="font-size: 9px; color: ${colors.hborder}; margin-bottom: 2px; text-transform: uppercase; font-weight: 900; letter-spacing: 1px;">Coup d'envoi</div>
                <div style="font-size: 13px; color: ${colors.textColor}; font-weight: 600; text-transform: capitalize;">\${start.toLocaleDateString('fr-FR', dateOptions)}</div>
-               <div style="font-size: 24px; color: ${colors.timeColor}; font-weight: 900; line-height: 1; margin-top: 2px;">\${timeStr}</div>
+               <div style="font-size: 24px; color: ${colors.hborder}; font-weight: 900; line-height: 1; margin-top: 2px;">\${timeStr}</div>
             </div>
           \`;
         ]]]`
@@ -130,13 +140,11 @@ const RugbyTemplate = () => {
     };
   }, [colors]);
 
-  // CORRECTION CRITIQUE ICI : Objet HASS complet
   const mockHass = useMemo(() => {
     const message = "Top14 - Toulouse vs Bordeaux";
     const fullDate = new Date('2026-01-20T21:00:00');
 
     return {
-      // 1. Les états
       states: {
         "calendar.calendrier_allrugby": {
           entity_id: "calendar.calendrier_allrugby",
@@ -153,22 +161,18 @@ const RugbyTemplate = () => {
             state: "on" 
         }
       },
-      // 2. Configuration Système (Indispensable pour button-card)
       config: {
         state: "RUNNING",
         unit_system: { temperature: "°C", length: "km", mass: "kg", volume: "L" },
         version: "2024.1.0",
         components: ["calendar", "button_card"]
       },
-      // 3. Infos utilisateur
       user: { is_owner: true, name: "Demo" },
-      // 4. Langue et Localisation
       language: "fr",
       resources: {},
       themes: { default_theme: "default", themes: {} },
       selectedTheme: "default",
       locale: { language: "fr", number_format: "comma_period" },
-      // 5. Fonction de localisation factice (pour éviter d'autres erreurs)
       localize: (key) => key
     };
   }, []);
@@ -181,15 +185,11 @@ const RugbyTemplate = () => {
       Object.keys(config.custom_fields).forEach(key => {
         let field = config.custom_fields[key];
         if (typeof field === 'string') {
-          // Extrait le code JS entre [[[ et ]]]
           const jsCode = field.substring(field.indexOf('[[[') + 3, field.lastIndexOf(']]]'));
-          
-          // Ajoute la variable basePath et remplace /local/ par ${basePath}local/ dans les template literals
           const updatedCode = `
             var basePath = '${basePath}';
             ${jsCode.replace(/`([^`]*?)\/local\/([^`]*?)`/g, '`$1${basePath}local/$2`')}
           `;
-          
           config.custom_fields[key] = `[[[${updatedCode}]]]`;
         }
       });
@@ -201,41 +201,181 @@ const RugbyTemplate = () => {
 
   const copyCode = () => {
     navigator.clipboard.writeText(yamlCode);
-    alert("Code copié !");
+    alert("Code copié dans le presse-papier !");
   };
 
   return (
-    <div className="builder-container">
-      {/* SIDEBAR */}
-      <div className="sidebar">
-        <h2>⚙️ Config</h2>
-        <div className="form-group">
-           <label>Fond Haut</label>
-           <div className="color-picker-row"><input type="color" value={colors.cardBgTop} onChange={e => setColors({...colors, cardBgTop: e.target.value})} /></div>
+    <>
+      <header>
+        <div className="header-content">
+          <div className="breadcrumb">
+            <Link to="/" className="logo">
+              <span className="logoEmoji">🏠</span>
+              <span>Accueil</span>
+            </Link>
+            <span>/</span>
+            <span>Template Rugby</span>
+          </div>
         </div>
-        <div className="form-group">
-           <label>Fond Bas</label>
-           <div className="color-picker-row"><input type="color" value={colors.cardBgBottom} onChange={e => setColors({...colors, cardBgBottom: e.target.value})} /></div>
-        </div>
-        <div className="form-group">
-           <label>Bordure</label>
-           <div className="color-picker-row"><input type="color" value={colors.borderColor} onChange={e => setColors({...colors, borderColor: e.target.value})} /></div>
-        </div>
-      </div>
+      </header>
 
-      {/* PREVIEW */}
-      <div className="preview-area">
-        <div style={{ width: '100%', maxWidth: '380px' }}>
-          <Preview type="button-card" config={previewConfig} hass={mockHass} />
-        </div>
-      </div>
+      <main className="main-content">
+        <div className="builder-grid">
+          {/* WIDGET CONFIGURATION - À GAUCHE */}
+          <div className="config-widget widget">
+            <h2 className="widget-title">⚙️ Configuration</h2>
+            <h3>Equipes</h3>
+            
+            <div className="form-group">
+              <label>fond</label>
+              <div className="color-picker-row">
+                <input 
+                  type="color" 
+                  value={colors.mhaut} 
+                  onChange={e => setColors({...colors, mhaut: e.target.value})} 
+                />
+                <span className="color-value">{colors.mhaut}</span>              
+              <input
+                  type="color"
+                  value={colors.mbas}
+                  onChange={e => setColors({...colors, mbas: e.target.value})}
+                />
+                <span className="color-value">{colors.mbas}</span>
+              </div>
+            </div>
+            <div className="form-group">
+              <label>border</label>
+              <div className="color-picker-row">
+                <input 
+                  type="color" 
+                  value={colors.mborder} 
+                  onChange={e => setColors({...colors, mborder: e.target.value})} 
+                />
+                <span className="color-value">{colors.mborder}</span>
+              </div>
+            </div>
+            <h3>Chaîne</h3>
+            <div className="form-group">
+              <label>fond</label>
+              <div className="color-picker-row">
+                <input 
+                  type="color" 
+                  value={colors.chaut} 
+                  onChange={e => setColors({...colors, chaut: e.target.value})} 
+                />
+                <span className="color-value">{colors.chaut}</span>
+                <input
+                  type="color"
+                  value={colors.cbas}
+                  onChange={e => setColors({...colors, cbas: e.target.value})}
+                />
+                <span className="color-value">{colors.cbas}</span>
+              </div>
+            </div>           
 
-      {/* CODE */}
-      <div className="code-area">
-        <textarea className="code-editor" readOnly value={yamlCode} />
-        <button className="copy-btn" onClick={copyCode}>Copier</button>
-      </div>
-    </div>
+            <div className="form-group">
+              <label>border</label>
+              <div className="color-picker-row">
+                <input 
+                  type="color" 
+                  value={colors.cborder} 
+                  onChange={e => setColors({...colors, cborder: e.target.value})} 
+                />
+                <span className="color-value">{colors.cborder}</span>
+              </div>
+            </div>
+            <h3>Date et Heure</h3>
+            <div className="form-group">
+              <label>Fond</label>
+              <div className="color-picker-row">
+                <input 
+                  type="color" 
+                  value={colors.hhaut} 
+                  onChange={e => setColors({...colors, hhaut: e.target.value})} 
+                />
+                <span className="color-value">{colors.hhaut}</span>
+                <input
+                  type="color"
+                  value={colors.hbas}
+                  onChange={e => setColors({...colors, hbas: e.target.value})}
+                />
+                <span className="color-value">{colors.hbas}</span>
+              </div>
+            </div>
+            <div className="form-group">
+              <label>Border</label>
+              <div className="color-picker-row">
+                <input 
+                  type="color" 
+                  value={colors.hborder} 
+                  onChange={e => setColors({...colors, hborder: e.target.value})} 
+                />
+                <span className="color-value">{colors.hborder}</span>
+              </div>
+            </div>
+
+            <h3>Texte</h3>
+            <div className="form-group">
+              <div className="color-picker-row">
+                <input
+                  type="color"
+                  value={colors.textColor}
+                  onChange={e => setColors({...colors, textColor: e.target.value})}
+                />
+                <span className="color-value">{colors.textColor}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* WIDGET PREVIEW - AU CENTRE */}
+          <div className="preview-widget">
+            <div style={{ width: '100%', maxWidth: '400px' }}>
+              <Preview type="button-card" config={previewConfig} hass={mockHass} />
+            </div>
+          </div>
+
+          {/* WIDGET INFO - EN HAUT À DROITE */}
+          <div className="info-widget widget">
+            <h2 className="widget-title">ℹ️ Informations</h2>
+            
+            <div className="info-section">
+              <h4>📋 Pré-requis</h4>
+              <ul>
+                <li>Home Assistant</li>
+                <li>HACS installé</li>
+                <li>
+                  <a href="https://github.com/custom-cards/button-card" target="_blank" rel="noopener noreferrer">
+                    Button Card
+                  </a> (via HACS)
+                </li>
+                <li>Un calendrier Rugby configuré</li>
+              </ul>
+            </div>
+
+            <div className="info-section">
+              <h4>🖼️ Images</h4>
+              <ul>
+                <li>Placez vos images dans <code>/local/images/rugby/</code></li>
+                <li>Structure :
+                  <ul>
+                    <li><code>teams/</code> : logos des équipes</li>
+                    <li><code>competitions/</code> : logs des compétitions</li>
+                    <li><code>chaines/</code> : logos des chaînes TV</li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* WIDGET CODE - EN BAS À DROITE */}
+          <div className="code-widget widget">
+            <h2 className="widget-title">💻 Code YAML</h2>
+            <textarea className="code-editor" readOnly value={yamlCode} />
+            <button className="copy-btn" onClick={copyCode}>📋 Copier le Code</button>
+          </div>
+        </div>
+      </main>
+    </>
   );
 };
 
