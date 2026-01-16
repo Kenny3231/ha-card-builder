@@ -181,14 +181,14 @@ const RugbyTemplate = () => {
       Object.keys(config.custom_fields).forEach(key => {
         let field = config.custom_fields[key];
         if (typeof field === 'string') {
-          // Ajoute une variable basePath au début du script JS
-          const jsCode = `
-            var basePath = '${basePath}';
-            ${field.substring(field.indexOf('[[[') + 3, field.lastIndexOf(']]]'))}
-          `;
+          // Extrait le code JS entre [[[ et ]]]
+          const jsCode = field.substring(field.indexOf('[[[') + 3, field.lastIndexOf(']]]'));
           
-          // Remplace les chemins /local/ par basePath + 'local/'
-          const updatedCode = jsCode.replace(/\/local\//g, "basePath + 'local/'");
+          // Ajoute la variable basePath et remplace /local/ par ${basePath}local/ dans les template literals
+          const updatedCode = `
+            var basePath = '${basePath}';
+            ${jsCode.replace(/`([^`]*?)\/local\/([^`]*?)`/g, '`$1${basePath}local/$2`')}
+          `;
           
           config.custom_fields[key] = `[[[${updatedCode}]]]`;
         }
