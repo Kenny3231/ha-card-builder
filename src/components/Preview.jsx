@@ -7,7 +7,7 @@ const Preview = ({ type, config, hass }) => {
   const [isDefined, setIsDefined] = useState(false);
 
   // 1. Gestion du nom du tag (custom-button-card)
-  const cardTag = type === 'button-card' ? 'custom-button-card' : `custom-${type}`;
+  const cardTag = type === 'button-card' ? 'button-card' : `custom-${type}`;
 
   useEffect(() => {
     const loadScript = async () => {
