@@ -17,6 +17,17 @@ const RugbyTemplate = () => {
     textColor: '#ffffff'
   });
 
+  const [openSections, setOpenSections] = useState({
+    equipes: true,
+    chaine: true,
+    date: true,
+    texte: true
+  });
+
+  const toggleSection = (section) => {
+    setOpenSections(prev => ({ ...prev, [section]: !prev[section] }));
+  };
+
   const cardConfig = useMemo(() => {
     return {
       type: 'custom:button-card',
@@ -219,107 +230,135 @@ const RugbyTemplate = () => {
           {/* WIDGET CONFIGURATION - À GAUCHE */}
           <div className="config-widget widget">
             <h2 className="widget-title">⚙️ Configuration</h2>
-            <h3>Equipes</h3>
             
-            <div className="form-group">
-              <label>fond</label>
-              <div className="color-picker-row">
-                <input 
-                  type="color" 
-                  value={colors.mhaut} 
-                  onChange={e => setColors({...colors, mhaut: e.target.value})} 
-                />
-                <span className="color-value">{colors.mhaut}</span>              
-              <input
-                  type="color"
-                  value={colors.mbas}
-                  onChange={e => setColors({...colors, mbas: e.target.value})}
-                />
-                <span className="color-value">{colors.mbas}</span>
-              </div>
-            </div>
-            <div className="form-group">
-              <label>border</label>
-              <div className="color-picker-row">
-                <input 
-                  type="color" 
-                  value={colors.mborder} 
-                  onChange={e => setColors({...colors, mborder: e.target.value})} 
-                />
-                <span className="color-value">{colors.mborder}</span>
-              </div>
-            </div>
-            <h3>Chaîne</h3>
-            <div className="form-group">
-              <label>fond</label>
-              <div className="color-picker-row">
-                <input 
-                  type="color" 
-                  value={colors.chaut} 
-                  onChange={e => setColors({...colors, chaut: e.target.value})} 
-                />
-                <span className="color-value">{colors.chaut}</span>
-                <input
-                  type="color"
-                  value={colors.cbas}
-                  onChange={e => setColors({...colors, cbas: e.target.value})}
-                />
-                <span className="color-value">{colors.cbas}</span>
-              </div>
-            </div>           
+            <h3 onClick={() => toggleSection('equipes')} className={openSections.equipes ? 'open' : ''}>
+              Equipes
+              <span className="arrow">▶</span>
+            </h3>
+            {openSections.equipes && (
+              <>
+                <div className="form-group">
+                  <label>fond</label>
+                  <div className="color-picker-row">
+                    <input 
+                      type="color" 
+                      value={colors.mhaut} 
+                      onChange={e => setColors({...colors, mhaut: e.target.value})} 
+                    />
+                    <span className="color-value">{colors.mhaut}</span>              
+                    <input
+                      type="color"
+                      value={colors.mbas}
+                      onChange={e => setColors({...colors, mbas: e.target.value})}
+                    />
+                    <span className="color-value">{colors.mbas}</span>
+                  </div>
+                </div>
+                <div className="form-group">
+                  <label>border</label>
+                  <div className="color-picker-row">
+                    <input 
+                      type="color" 
+                      value={colors.mborder} 
+                      onChange={e => setColors({...colors, mborder: e.target.value})} 
+                    />
+                    <span className="color-value">{colors.mborder}</span>
+                  </div>
+                </div>
+              </>
+            )}
 
-            <div className="form-group">
-              <label>border</label>
-              <div className="color-picker-row">
-                <input 
-                  type="color" 
-                  value={colors.cborder} 
-                  onChange={e => setColors({...colors, cborder: e.target.value})} 
-                />
-                <span className="color-value">{colors.cborder}</span>
-              </div>
-            </div>
-            <h3>Date et Heure</h3>
-            <div className="form-group">
-              <label>Fond</label>
-              <div className="color-picker-row">
-                <input 
-                  type="color" 
-                  value={colors.hhaut} 
-                  onChange={e => setColors({...colors, hhaut: e.target.value})} 
-                />
-                <span className="color-value">{colors.hhaut}</span>
-                <input
-                  type="color"
-                  value={colors.hbas}
-                  onChange={e => setColors({...colors, hbas: e.target.value})}
-                />
-                <span className="color-value">{colors.hbas}</span>
-              </div>
-            </div>
-            <div className="form-group">
-              <label>Border</label>
-              <div className="color-picker-row">
-                <input 
-                  type="color" 
-                  value={colors.hborder} 
-                  onChange={e => setColors({...colors, hborder: e.target.value})} 
-                />
-                <span className="color-value">{colors.hborder}</span>
-              </div>
-            </div>
+            <h3 onClick={() => toggleSection('chaine')} className={openSections.chaine ? 'open' : ''}>
+              Chaîne
+              <span className="arrow">▶</span>
+            </h3>
+            {openSections.chaine && (
+              <>
+                <div className="form-group">
+                  <label>fond</label>
+                  <div className="color-picker-row">
+                    <input 
+                      type="color" 
+                      value={colors.chaut} 
+                      onChange={e => setColors({...colors, chaut: e.target.value})} 
+                    />
+                    <span className="color-value">{colors.chaut}</span>
+                    <input
+                      type="color"
+                      value={colors.cbas}
+                      onChange={e => setColors({...colors, cbas: e.target.value})}
+                    />
+                    <span className="color-value">{colors.cbas}</span>
+                  </div>
+                </div>           
 
-            <h3>Texte</h3>
-            <div className="form-group">
-              <div className="color-picker-row">
-                <input
-                  type="color"
-                  value={colors.textColor}
-                  onChange={e => setColors({...colors, textColor: e.target.value})}
-                />
-                <span className="color-value">{colors.textColor}</span>
+                <div className="form-group">
+                  <label>border</label>
+                  <div className="color-picker-row">
+                    <input 
+                      type="color" 
+                      value={colors.cborder} 
+                      onChange={e => setColors({...colors, cborder: e.target.value})} 
+                    />
+                    <span className="color-value">{colors.cborder}</span>
+                  </div>
+                </div>
+              </>
+            )}
+
+            <h3 onClick={() => toggleSection('date')} className={openSections.date ? 'open' : ''}>
+              Date et Heure
+              <span className="arrow">▶</span>
+            </h3>
+            {openSections.date && (
+              <>
+                <div className="form-group">
+                  <label>Fond</label>
+                  <div className="color-picker-row">
+                    <input 
+                      type="color" 
+                      value={colors.hhaut} 
+                      onChange={e => setColors({...colors, hhaut: e.target.value})} 
+                    />
+                    <span className="color-value">{colors.hhaut}</span>
+                    <input
+                      type="color"
+                      value={colors.hbas}
+                      onChange={e => setColors({...colors, hbas: e.target.value})}
+                    />
+                    <span className="color-value">{colors.hbas}</span>
+                  </div>
+                </div>
+                <div className="form-group">
+                  <label>Border</label>
+                  <div className="color-picker-row">
+                    <input 
+                      type="color" 
+                      value={colors.hborder} 
+                      onChange={e => setColors({...colors, hborder: e.target.value})} 
+                    />
+                    <span className="color-value">{colors.hborder}</span>
+                  </div>
+                </div>
+              </>
+            )}
+
+            <h3 onClick={() => toggleSection('texte')} className={openSections.texte ? 'open' : ''}>
+              Texte
+              <span className="arrow">▶</span>
+            </h3>
+            {openSections.texte && (
+              <div className="form-group">
+                <div className="color-picker-row">
+                  <input
+                    type="color"
+                    value={colors.textColor}
+                    onChange={e => setColors({...colors, textColor: e.target.value})}
+                  />
+                  <span className="color-value">{colors.textColor}</span>
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* WIDGET PREVIEW - AU CENTRE */}

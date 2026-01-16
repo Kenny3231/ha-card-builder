@@ -221,6 +221,27 @@ header {
   gap: 8px;
 }
 
+.config-widget h3 {
+  cursor: pointer;
+  user-select: none;
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between; /* Pour espacer le titre et la flèche */
+  align-items: center;
+  gap: 8px;
+}
+
+.config-widget h3 .arrow {
+  transition: transform 0.3s ease;
+}
+
+.config-widget h3.open .arrow {
+  transform: rotate(90deg);
+}
+
 /* ===== FORMULAIRES ===== */
 .form-group {
   margin-bottom: 16px;
