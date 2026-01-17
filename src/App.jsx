@@ -7,7 +7,7 @@ const Home = () => (
   <>
     <main className="main-content home-main">
       <div className="hero-section">
-        <h1><span className="logoEmoji">🔧</span> HA Card Builder</h1>
+        <h1>🔧 HA Card Builder</h1>
         <p>Créez des cartes Home Assistant personnalisées.</p>
       </div>
       

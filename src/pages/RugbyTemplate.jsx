@@ -5,9 +5,9 @@ import yaml from 'js-yaml';
 
 const RugbyTemplate = () => {
   const [colors, setColors] = useState({
-    mborder: '#f1c40f',
-    mhaut: '#333333',
-    mbas: '#1a1a1a',
+    tborder: '#f1c40f',
+    thaut: '#333333',
+    tbas: '#1a1a1a',
     cborder: '#e67e22',
     chaut: '#3a2d22',
     cbas: '#1a1a1a',
@@ -77,8 +77,8 @@ const RugbyTemplate = () => {
   
           return \`
             <div style="
-              background: linear-gradient(180deg, ${colors.mhaut} 60%, ${colors.mbas} 100%);
-              border-left: 5px solid ${colors.mborder};
+              background: linear-gradient(180deg, ${colors.thaut} 60%, ${colors.tbas} 100%);
+              border-left: 5px solid ${colors.tborder};
               border-radius: 10px;
               position: relative;
               display: flex;
@@ -242,16 +242,16 @@ const RugbyTemplate = () => {
                   <div className="color-picker-row">
                     <input 
                       type="color" 
-                      value={colors.mhaut} 
-                      onChange={e => setColors({...colors, mhaut: e.target.value})} 
+                      value={colors.thaut} 
+                      onChange={e => setColors({...colors, thaut: e.target.value})} 
                     />
-                    <span className="color-value">{colors.mhaut}</span>              
+                    <span className="color-value">{colors.thaut}</span>              
                     <input
                       type="color"
-                      value={colors.mbas}
-                      onChange={e => setColors({...colors, mbas: e.target.value})}
+                      value={colors.tbas}
+                      onChange={e => setColors({...colors, tbas: e.target.value})}
                     />
-                    <span className="color-value">{colors.mbas}</span>
+                    <span className="color-value">{colors.tbas}</span>
                   </div>
                 </div>
                 <div className="form-group">
@@ -259,10 +259,10 @@ const RugbyTemplate = () => {
                   <div className="color-picker-row">
                     <input 
                       type="color" 
-                      value={colors.mborder} 
-                      onChange={e => setColors({...colors, mborder: e.target.value})} 
+                      value={colors.tborder} 
+                      onChange={e => setColors({...colors, tborder: e.target.value})} 
                     />
-                    <span className="color-value">{colors.mborder}</span>
+                    <span className="color-value">{colors.tborder}</span>
                   </div>
                 </div>
               </>

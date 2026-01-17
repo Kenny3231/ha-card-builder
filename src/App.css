@@ -1,5 +1,20 @@
 /* src/App.css - Refonte avec design moderne */
 
+:root {
+    --primary-color: #2563eb;
+    --secondary-color: #1d4ed8;
+    --accent-color: #f59e0b;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --background-color: #0f172a;
+    --surface-color: #1e293b;
+    --card-color: #334155;
+    --text-color: #f8fafc;
+    --text-muted: #94a3b8;
+    --border-color: #475569;
+}
+
 /* ===== STRUCTURE GÉNÉRALE ===== */
 .app-container {
   display: flex;
@@ -26,10 +41,6 @@ header {
   display: flex;
   align-items: center;
   gap: 12px;
-}
-
-.logoEmoji {
-  font-size: 28px;
 }
 
 .header-content {
@@ -88,15 +99,17 @@ header {
 }
 
 .hero-section h1 {
-  font-size: 48px;
+  font-size: 3.5rem;
   font-weight: 600;
-  margin-bottom: 16px;
-  background: -webkit-linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  background-clip: text;
   display: flex;
   align-items: center;
   justify-content: center;
+  text-shadow: 0 0 30px rgba(37, 99, 235, 0.3);
   gap: 12px;
 }
 
