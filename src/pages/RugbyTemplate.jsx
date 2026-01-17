@@ -18,10 +18,10 @@ const RugbyTemplate = () => {
   });
 
   const [openSections, setOpenSections] = useState({
-    equipes: true,
-    chaine: true,
-    date: true,
-    texte: true
+    equipes: false,
+    chaine: false,
+    date: false,
+    texte: false
   });
 
   const toggleSection = (section) => {
@@ -216,11 +216,10 @@ const RugbyTemplate = () => {
         <div className="header-content">
           <div className="breadcrumb">
             <Link to="/" className="logo">
-              <span className="logoEmoji">🏠</span>
-              <span>Accueil</span>
+              <span className="breadcrumb-home">Accueil</span>
             </Link>
             <span>/</span>
-            <span>Template Rugby</span>
+            <span className="breadcrumb-title">Template Rugby</span>
           </div>
         </div>
       </header>
@@ -375,14 +374,21 @@ const RugbyTemplate = () => {
             <div className="info-section">
               <h4>📋 Pré-requis</h4>
               <ul>
-                <li>Home Assistant</li>
-                <li>HACS installé</li>
                 <li>
                   <a href="https://github.com/custom-cards/button-card" target="_blank" rel="noopener noreferrer">
                     Button Card
                   </a> (via HACS)
                 </li>
-                <li>Un calendrier Rugby configuré</li>
+                <li>
+                  <a href="https://github.com/custom-cards/button-card" target="_blank" rel="noopener noreferrer">
+                    All Rugby                
+                  </a> Un calendrier Rugby configuré dans Home Assistant
+              </li>
+              <li>
+                  <a href="https://github.com/Kenny3231/ha-img-perso" target="_blank" rel="noopener noreferrer">
+                    Images SVG
+                  </a> Via mon dépot Github
+                </li>
               </ul>
             </div>
 

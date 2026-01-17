@@ -373,6 +373,27 @@ textarea.code-editor {
 }
 
 /* ===== RESPONSIVE ===== */
+
+.breadcrumb-title {
+  font-size: 2rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 20px rgba(37, 99, 235, 0.25);
+}
+
+.breadcrumb-home {
+  font-size: 1.8rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, var(--success-color), var(--primary-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 20px rgba(16, 185, 129, 0.25);
+}
+
 @media (max-width: 1400px) {
   .builder-grid {
     grid-template-columns: 280px 1fr 340px;
